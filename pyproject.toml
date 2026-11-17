@@ -1,0 +1,39 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11>=2.12"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "ibc"
+version = "0.1.0"
+description = "Intensity-based clustering of isomorphous multi-crystal MX data sets"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "scikit-learn>=1.3",
+    "matplotlib>=3.7",
+]
+
+[project.scripts]
+ibc = "ibc.cli:main"
+
+[tool.scikit-build]
+# scikit-build-core fetches a recent CMake/Ninja from PyPI if the system ones are too old.
+cmake.version = ">=3.28"
+cmake.build-type = "Release"
+# Keep the build tree between installs so gemmi is only compiled once.
+build-dir = "build/{wheel_tag}"
+# Python sources; the compiled fast_mtz module is installed next to them.
+wheel.packages = ["src/ibc"]
+# Only ship our extension, never anything gemmi's own CMake might install.
+install.components = ["python"]
+sdist.exclude = ["build/", "runs/", ".venv/", "*.so"]
+
+[tool.uv]
+# Rebuild the C++ extension on `uv sync` / `uv run` whenever these change.
+cache-keys = [
+    { file = "pyproject.toml" },
+    { file = "CMakeLists.txt" },
+    { file = "src/cpp/*.cpp" },
+]
