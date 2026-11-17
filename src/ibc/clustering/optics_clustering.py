@@ -1,4 +1,3 @@
-
 from sklearn.cluster import OPTICS
 import matplotlib
 import matplotlib.pyplot as plt
@@ -113,26 +112,15 @@ def plot_multidimensional_grid(X, labels, project_name):
     plt.savefig(output_filename, dpi=200)
     plt.close('all')
 
-def plot_multidimensional_grid_annotated(X, labels, sorted_names, metadata_path, project_name):
+def plot_multidimensional_grid_annotated(X, labels, ground_truth, project_name):
     """
     Plots multidimensional projection matrix where:
     - Colors represent assigned OPTICS clusters.
-    - Marker shapes represent Ground Truth sample types (Ground State, Error, etc.)
-    """
-    # Parse ground truth metadata
-    sample_map = {}
-    with open(metadata_path, "r") as f:
-        for line in f:
-            parts = line.split()
-            if len(parts) >= 2:
-                sample_map[parts[0].strip().replace('hTTR_P21212-x', '')] = parts[1].strip()
+    - Marker shapes represent ground-truth sample types from the metadata file.
 
-    # Build ground truth array aligned with X
-    ground_truth = []
-    for name in sorted_names:
-        clean_name = name.replace('.mtz', '')
-        ground_truth.append(sample_map.get(clean_name, "UNKNOWN"))
-    ground_truth = np.array(ground_truth)
+    ground_truth is a sequence of labels aligned with the rows of X.
+    """
+    ground_truth = np.asarray(ground_truth, dtype=str)
 
     n_samples, d = X.shape
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -144,13 +132,21 @@ def plot_multidimensional_grid_annotated(X, labels, sorted_names, metadata_path,
     cluster_only_labels = [l for l in unique_labels if l != -1]
     cmap = plt.get_cmap('tab10')
 
-    # Assign distinct markers for sample types
-    marker_map = {
-        'ground_state': 'o',      # Circle
-        'non_ground_state': 'v',  # Square
-        'error': 'X',             # Large X
-        'ignore': 's'            # Triangle
+    # Assign a distinct marker to every sample type found in the metadata.
+    preferred_markers = {
+        'ground_state': 'o',
+        'non_ground_state': 'v',
+        'error': 'X',
+        'ignore': 's',
+        'UNKNOWN': '.',
     }
+    spare_markers = ['D', '^', 'P', '*', '<', '>', 'h', 'p', 'd', '8']
+    marker_map = {}
+    for stype in sorted(np.unique(ground_truth)):
+        if stype in preferred_markers:
+            marker_map[stype] = preferred_markers[stype]
+        else:
+            marker_map[stype] = spare_markers[len(marker_map) % len(spare_markers)]
 
     for row in range(d):
         for col in range(d):

@@ -76,6 +76,17 @@ def parse_args():
     )
 
     parser.add_argument(
+        "-M",
+        "--metadata",
+        type=str,
+        default=None,
+        help="Optional ground-truth file with two columns: dataset ID and label "
+        "(whitespace-, tab- or comma-separated; '#' starts a comment). "
+        "If omitted, metadata.txt / metadata.tsv / metadata.csv is looked for "
+        "inside the input folder; if none exists, the comparison is skipped.",
+    )
+
+    parser.add_argument(
         "-b",
         "--buffer-parameter",
         type=float,
