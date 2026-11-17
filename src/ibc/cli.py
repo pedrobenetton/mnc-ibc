@@ -212,7 +212,7 @@ def pipeline_function(
             R, minimize_method, use_spectral_init, forced_dimension, d_max=d_max, W=W
         )
 
-        print_phi_table(phi_vals)
+        print_phi_table(phi_vals, forced_dimension)
 
         if forced_dimension == 0:
             optimal_d = find_elbow(phi_vals)
