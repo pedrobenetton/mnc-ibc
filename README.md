@@ -9,7 +9,7 @@ gemmi does **not** need to be installed: the build downloads
 links it into the `fast_mtz` extension.
 
 ```bash
-git clone <repo-url> && cd IBC
+git clone https://github.com/pedrobenetton/mnc-ibc && cd mnc-ibc
 uv sync                  # creates .venv, installs dependencies, compiles fast_mtz
 uv run ibc --help
 ```
@@ -20,7 +20,7 @@ After editing `src/cpp/mtz_reader_py.cpp`, the next `uv run`/`uv sync` rebuilds 
 To install the `ibc` command globally (outside a project venv):
 
 ```bash
-uv tool install git+<repo-url>
+uv tool install git+https://github.com/pedrobenetton/mnc-ibc
 ```
 
 ### Build options
